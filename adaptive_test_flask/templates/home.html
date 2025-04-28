@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Adaptive Test</title>
+    <style>
+    :root {
+        --discord-dark: #36393f;
+        --discord-gray: #2f3136;
+        --discord-light: #40444b;
+        --discord-text: #dcddde;
+        --discord-blue: #5865f2;
+        --discord-red: #ed4245;
+        --discord-green: #3ba55c;
+    }
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: var(--discord-dark);
+        color: var(--discord-text);
+        font-family: 'Whitney', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        min-height: 100vh;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 30px;
+        background-color: var(--discord-gray);
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    h1, h2, h3 {
+        color: white;
+        margin-top: 0;
+        padding: 0 15px;
+    }
+
+    form {
+        background-color: var(--discord-light);
+        padding: 25px;
+        border-radius: 8px;
+        margin: 20px 0;
+    }
+
+    .form-group {
+        margin: 10px 15px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    select {
+        width: 100%;
+        padding: 12px;
+        margin: 8px 0;
+        background-color: var(--discord-dark);
+        border: 1px solid #202225;
+        border-radius: 5px;
+        color: var(--discord-text);
+        font-size: 15px;
+        transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus,
+    select:focus {
+        border-color: var(--discord-blue);
+        outline: none;
+    }
+
+    input[type="radio"] {
+        margin-right: 12px;
+    }
+
+    button, .button {
+        background-color: var(--discord-blue);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 500;
+        transition: all 0.2s;
+        margin: 10px 15px;
+        width: calc(100% - 30px);
+    }
+
+    button:hover, .button:hover {
+        background-color: #4752c4;
+        transform: translateY(-1px);
+    }
+
+    .logout-btn {
+        background-color: var(--discord-red);
+        position: fixed;
+        top: 25px;
+        right: 25px;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .question-container {
+        background-color: var(--discord-light);
+        padding: 25px;
+        border-radius: 8px;
+        margin: 20px;
+    }
+
+    .recommendations {
+        background-color: var(--discord-light);
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px;
+    }
+
+    .recommendations li {
+        margin: 15px 0;
+        padding: 15px;
+        background-color: var(--discord-gray);
+        border-radius: 5px;
+        line-height: 1.5;
+    }
+
+    .alert {
+        padding: 15px;
+        margin: 15px;
+        border-radius: 5px;
+    }
+
+    .alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .flex-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+    }
+
+    .forgot-password {
+        margin: 15px;
+        text-align: center;
+    }
+
+    .forgot-password a {
+        color: var(--discord-blue);
+        text-decoration: none;
+        font-size: 0.95em;
+        transition: color 0.2s;
+    }
+
+    .forgot-password a:hover {
+        color: #4752c4;
+        text-decoration: underline;
+    }
+
+    .toggle-form {
+        color: var(--discord-blue);
+        cursor: pointer;
+        margin: 15px;
+        text-align: center;
+        transition: color 0.2s;
+        font-size: 0.95em;
+    }
+
+    .toggle-form:hover {
+        color: #4752c4;
+        text-decoration: underline;
+    }
+
+    .auth-form {
+        max-width: 450px;
+        margin: 0 auto;
+        padding: 15px;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .flash-messages {
+        color: #ff6b6b;
+        margin: 15px;
+        padding: 15px;
+        background-color: var(--discord-gray);
+        border-radius: 5px;
+    }    
+</style>
+</head>
+<body>
+<div class="flex-center">
+    <div class="container">
+    <div class="auth-form">
+        <h1>Adaptive Testing System</h1>
+        
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Login Form -->
+        <form id="loginForm" method="POST" {% if not show_register %}class="active"{% endif %}>
+            <h2>Login</h2>
+            <input type="hidden" name="action" value="login">
+            
+            <label>
+                Test Taker Name:
+                <input type="text" name="test_taker" required>
+            </label><br>
+            
+            <label>
+                Password:
+                <input type="password" name="password" required>
+            </label><br>
+            
+            <button type="submit">Login</button>
+            <p class="toggle-form" onclick="showForm('register')">
+                    Don't have an account? Register here
+                </p>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm" method="POST" class="hidden" {% if show_register %}class="active"{% endif %}>
+            <h2>Register</h2>
+            <input type="hidden" name="action" value="register">
+            
+            <label>
+                Test Taker Name:
+                <input type="text" name="test_taker" required>
+            </label><br>
+            
+            <label>
+                Password:
+                <input type="password" name="password" required>
+            </label><br>
+            
+            <button type="submit">Register</button>
+            <p class="toggle-form" onclick="showForm('login')">
+                Already have an account? Login here
+            </p>
+        </form>
+    </div>
+
+    <script>
+        function showForm(formType) {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            
+            if (formType === 'register') {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+            } else {
+                registerForm.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+            }
+        }
+    </script>
+</div>
+</div>
+</div>
+</body>
+</html>

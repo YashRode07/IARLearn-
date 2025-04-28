@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    :root {
+        --discord-dark: #36393f;
+        --discord-gray: #2f3136;
+        --discord-light: #40444b;
+        --discord-text: #dcddde;
+        --discord-blue: #5865f2;
+        --discord-red: #ed4245;
+        --discord-green: #3ba55c;
+    }
+
+    body {
+        background-color: var(--discord-dark);
+        color: var(--discord-text);
+        font-family: 'Whitney', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        min-height: 100vh;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: var(--discord-gray);
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    h1, h2, h3 {
+        color: white;
+        margin-top: 0;
+    }
+
+    form {
+        background-color: var(--discord-light);
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    select {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        background-color: var(--discord-dark);
+        border: 1px solid #202225;
+        border-radius: 4px;
+        color: var(--discord-text);
+        font-size: 16px;
+    }
+
+    input[type="radio"] {
+        margin-right: 10px;
+    }
+
+    button, .button {
+        background-color: var(--discord-blue);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        transition: background-color 0.2s;
+    }
+
+    button:hover, .button:hover {
+        background-color: #4752c4;
+    }
+
+    .logout-btn {
+        background-color: var(--discord-red);
+        position: fixed;
+        top: 20px;
+        right: 20px;
+    }
+
+    .question-container {
+        background-color: var(--discord-light);
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+    }
+
+    .recommendations {
+        background-color: var(--discord-light);
+        padding: 15px;
+        border-radius: 8px;
+        margin: 15px 0;
+    }
+
+    .recommendations li {
+        margin: 10px 0;
+        padding: 10px;
+        background-color: var(--discord-gray);
+        border-radius: 4px;
+    }
+
+    .alert {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 4px;
+    }
+
+    .alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .flex-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+    }
+</style>
+    <title>Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+      <style>
+        .chart-box {
+            margin: 20px auto;
+            width: 80%;
+            max-width: 800px;
+        }
+    </style>
+
+</head>
+<body>
+<div class="flex-center">
+    <div class="container">
+        <div class="analytics">
+    <h1>{{ session.test_taker }}'s Learning Dashboard</h1>
+    <a href="{{ url_for('profile') }}">Back to Profile</a>
+    
+    <form method="POST">
+    <select name="topic" required>
+        <option value="">Select Topic</option>
+        {% for topic in topics %}
+            <option value="{{ topic }}" 
+                {% if topic == selected_topic %}selected{% endif %}>
+                {{ topic }}
+            </option>
+        {% endfor %}
+    </select>
+    <button type="submit">Analyze</button>
+</form>
+
+<style>
+    .chart-container {
+        position: relative;
+        height: 400px;
+        width: 100%;
+    }
+</style>
+    
+    {% if selected_topic %}
+    <div class="chart-container">
+        <canvas id="abilityChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="subtopicChart"></canvas>
+    </div>
+
+    <script>
+        // Initialize charts with proper options
+        const chartOptions = {
+            maintainAspectRatio: false,
+            responsive: true
+        };
+
+        // Ability Chart
+        new Chart(document.getElementById('abilityChart'), {
+            type: 'line',
+            data: {
+                labels: {{ charts.ability.labels | tojson | safe }},
+                datasets: [{
+                    label: 'Ability Estimate',
+                    data: {{ charts.ability.data | tojson | safe }},
+                    borderColor: '#4e73df',
+                    fill: false
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                    y: { 
+                        title: { display: true, text: 'Ability Level' },
+                        beginAtZero: false
+                    },
+                    x: { 
+                        title: { display: true, text: 'Test Attempt' }
+                    }
+                }
+            }
+        });
+
+        // Subtopic Chart
+        new Chart(document.getElementById('subtopicChart'), {
+            type: 'bar',
+            data: {
+                labels: {{ charts.subtopics.labels | tojson | safe }},
+                datasets: [{
+                    label: 'Weakness Frequency',
+                    data: {{ charts.subtopics.data | tojson | safe }},
+                    backgroundColor: '#e74a3b88',
+                    borderColor: '#e74a3b',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        title: { display: true, text: 'Count' },
+                        ticks: { stepSize: 1 }
+                    },
+                    x: { 
+                        title: { display: true, text: 'Subtopics' }
+                    }
+                }
+            }
+        });
+    </script>
+{% endif %}
+</div>
+</div>
+</div>
+
+</body>
+</html>
